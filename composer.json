@@ -1,0 +1,26 @@
+{
+  "name": "alkurn/yii2-websocket",
+  "description": "Yii2 helper for creating websocket",
+  "keywords": ["yii2", "websocket", "helper"],
+  "type": "yii2-extension",
+  "license": "MIT",
+  "support": {
+    "issues": "https://gitlab.com/alkurn/yii2-websocket/issue",
+    "source": "https://gitlab.com/alkurn/yii2-websocket"
+  },
+  "authors": [
+    {
+      "name": "Ganesh",
+      "email": "ganesh.alkurn@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "yiisoft/yii2": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "alkurn\\websocket\\": ""
+    }
+  }
+}
