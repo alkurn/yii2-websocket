@@ -8,25 +8,22 @@ class WebSocket extends Component
 {
     public $host;
     public $port;
-    public $max;
+
     public $socket;
     public $socket_new;
     public $clients;
 
-    /*public function __construct($host = '192.162.1.25', $port = 9000, $max = 100)
+    public function init()
     {
-        $this->host = Yii::getAlias('@host');
-        $this->port = $port ;
-        $this->max = $max;
-    }*/
+        $this->run();
+    }
 
-    public function createSocket($host = '', $port = '')
+    public function run()
     {
+        $host = $this->host ;
+        $port = $this->port;
+
         $null = NULL; //null var
-        $host = (!empty($host)) ? $host : $this->host;
-        $port = (!empty($port)) ? $port : $this->port;
-
-
         //Create TCP/IP sream socket
         $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
@@ -61,7 +58,7 @@ class WebSocket extends Component
 
                 socket_getpeername($this->socket_new, $ip); //get ip address of connected socket
 
-                $response = $this->mask(json_encode([ 'type' => 'system', 'message' => $ip . ' connected']));//prepare json data
+                $response = $this->mask(json_encode(['type' => 'system', 'message' => $ip . ' connected']));//prepare json data
                 $this->sendMessage($response); //notify all users about new connection
 
                 //make room for new socket
@@ -78,12 +75,12 @@ class WebSocket extends Component
                     $received_text = $this->unmask($buf); //unmask data
                     $tst_msg = json_decode($received_text); //json decode
 
-                    if( $tst_msg && count($tst_msg) > 0){
-                        $type = ( isset($tst_msg->type) && !empty($tst_msg->type) ) ? $tst_msg->type : 'user';
-                        $info = [ 'code' => 'success', 'type' => $type, 'message_id' => $tst_msg->message_id, 'seq' => $tst_msg->seq, 'text' => $tst_msg->text ];
+                    if ($tst_msg && count($tst_msg) > 0) {
+                        $type = (isset($tst_msg->type) && !empty($tst_msg->type)) ? $tst_msg->type : 'user';
+                        $info = ['code' => 'success', 'type' => $type, 'message_id' => $tst_msg->message_id, 'seq' => $tst_msg->seq, 'text' => $tst_msg->text];
                         //prepare data to be sent to client
-                    }else{
-                        $info = ['code'=>'failed', 'message_id' => null, 'seq' => null, 'text' => 'Error in socket'];
+                    } else {
+                        $info = ['code' => 'failed', 'message_id' => null, 'seq' => null, 'text' => 'Error in socket'];
                     }
 
                     $response_text = $this->mask(json_encode($info));
@@ -102,7 +99,7 @@ class WebSocket extends Component
                     unset($this->clients[$found_socket]);
 
                     //notify all users about disconnected connection
-                    $response = $this->mask(json_encode(['code'=>'failed', 'type' => 'system', 'message' => $ip . ' disconnected']));
+                    $response = $this->mask(json_encode(['code' => 'failed', 'type' => 'system', 'message' => $ip . ' disconnected']));
                     $this->sendMessage($response);
                 }
             }
@@ -153,15 +150,14 @@ class WebSocket extends Component
 
     function sendMessage($msg)
     {
-        if(isset($this->clients) && count($this->clients) > 0){
+        if (isset($this->clients) && count($this->clients) > 0) {
             foreach ($this->clients as $changed_socket) {
-                @socket_write($changed_socket, $msg, strlen($msg)) ;
+                @socket_write($changed_socket, $msg, strlen($msg));
             }
         }
 
         return true;
     }
-
 
 
 //handshake new client.
