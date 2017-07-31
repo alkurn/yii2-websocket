@@ -15,13 +15,14 @@ class WebSocket extends Component
 
     public function init()
     {
-        $this->run();
+        $host = $this->host;
+        $port = $this->port;
     }
 
-    public function run()
-    {
-        $host = $this->host ;
-        $port = $this->port;
+    public function createSocket(){
+
+        $host = \Yii::$app->WebSocket->host;
+        $port = \Yii::$app->WebSocket->port;
 
         $null = NULL; //null var
         //Create TCP/IP sream socket
